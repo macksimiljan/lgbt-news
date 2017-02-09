@@ -12,7 +12,7 @@ import java.util.Properties;
  */
 public class PropertyPoint {
 
-    private static final String FILE = "./src/main/resources/config.properties";
+    private static final String FILE = "./lgbt-news-collect/src/main/resources/config.properties";
 
 
     private static List<String> nytKeys;
@@ -56,7 +56,8 @@ public class PropertyPoint {
             nytKeys = new ArrayList<>(1);
             nytKeys.add(properties.getProperty("nyt"));
         } catch (java.io.IOException e) {
-            System.err.println("Cannot load properties from "+FILE+"! Check whether file exists and all keys are correct!");
+            System.err.println("Cannot load properties from "+FILE+"! " +
+                    "Check whether file exists and all keys are correct!\n\tYou are here: "+System.getProperty("user.dir"));
             e.printStackTrace();
             System.exit(1);
         } finally {

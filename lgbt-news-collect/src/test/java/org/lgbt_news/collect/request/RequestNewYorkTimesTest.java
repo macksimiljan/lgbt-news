@@ -5,11 +5,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.lgbt_news.collect.utils.PropertyPoint;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Properties;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 

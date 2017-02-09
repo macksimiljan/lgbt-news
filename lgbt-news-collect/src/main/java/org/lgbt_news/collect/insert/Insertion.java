@@ -1,5 +1,6 @@
 package org.lgbt_news.collect.insert;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.sql.*;
@@ -16,39 +17,49 @@ public class Insertion {
         CONN = conn;
     }
 
-    protected void setCharValue(int index, JSONObject obj, String key) throws SQLException {
-        if (obj.has(key)) {
+    protected void setCharValue(int index, JSONObject obj, String key) throws Exception  {
+        if (obj.has(key) && !JSONObject.NULL.equals(obj.get(key))) {
             String value = obj.getString(key).trim();
             setStringValue(index, value, Types.CHAR);
         } else
             setNullValue(index, Types.CHAR);
     }
 
-    protected void setNVarcharValue(int index, JSONObject obj, String key) throws SQLException {
-        if (obj.has(key)) {
+    protected void setNVarcharValue(int index, JSONObject obj, String key) throws Exception {
+        setNVarcharValue(index, obj, key, -1);
+    }
+
+    protected void setNVarcharValue(int index, JSONObject obj, String key, int maxLength) throws Exception {
+        if (obj.has(key) && !JSONObject.NULL.equals(obj.get(key))) {
             String value = obj.getString(key).trim();
-            setNVarcharValue(index, value);
+            value = cutString(value, maxLength);
+           setNVarcharValue(index, value);
         } else
             setNullValue(index, Types.NVARCHAR);
     }
 
-    protected void setNVarcharValue(int index, String value) throws SQLException {
+    protected void setNVarcharValue(int index, String value) throws Exception  {
         setStringValue(index, value, Types.NVARCHAR);
     }
 
-    protected void setStringValue(int index, String value, int type) throws SQLException {
+    protected void setNVarcharValue(int index, String value, int maxLength) throws Exception {
+        value = cutString(value, maxLength);
+        setNVarcharValue(index, value);
+    }
+
+    protected void setStringValue(int index, String value, int type) throws Exception  {
         if (value.equals("null") || value == null || value.length() == 0)
             setNullValue(index, type);
         else
             prepStat.setString(index, value);
     }
 
-    protected void setNullValue(int index, int type) throws SQLException {
+    protected void setNullValue(int index, int type) throws Exception {
         prepStat.setNull(index, type);
     }
 
-    protected void setIntValue(int index, JSONObject obj, String key, int type) throws SQLException {
-        if (obj.has(key)) {
+    protected void setIntValue(int index, JSONObject obj, String key, int type) throws Exception  {
+        if (obj.has(key) && !JSONObject.NULL.equals(obj.get(key))) {
             int value = obj.getInt(key);
             if (value == 0)
                 setNullValue(index, type);
@@ -84,5 +95,11 @@ public class Insertion {
                 stmt.close();
         }
         return nextId;
+    }
+
+    private String cutString(String str, int maxLength) {
+        if(maxLength > -1)
+            str = (str.length() <= maxLength) ? str : str.substring(0, maxLength-1);
+        return  str;
     }
 }

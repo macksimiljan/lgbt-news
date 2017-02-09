@@ -22,8 +22,8 @@ public class InsertionDocumentKeyword extends  Insertion{
             prepare(idDocument, idKeyword);
             execute();
         } catch (SQLException e) {
-            System.err.println("Could not insert ("+idDocument+","+idKeyword+") into document_keyword table!");
-            e.printStackTrace();
+            System.err.println("Could not insert ("+idDocument+","+idKeyword+") " +
+                    "into document_keyword table: "+e.getMessage()+"!");
         }
     }
 

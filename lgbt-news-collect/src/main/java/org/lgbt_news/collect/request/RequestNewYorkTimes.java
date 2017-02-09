@@ -55,7 +55,7 @@ public class RequestNewYorkTimes implements  Request {
         private String facetFields;
         private boolean hasFacetCount = false;
 
-        public Builder (String queryTerm, String apiKey) {
+        public Builder(String queryTerm, String apiKey) {
             this.apiKey = apiKey;
             this.queryTerm = queryTerm;
         }
@@ -128,31 +128,30 @@ public class RequestNewYorkTimes implements  Request {
         return "New York Times, Article Search";
     }
 
-    public String getResponseAsString() throws IOException {
+    public String getResponseAsString() {
         if (responseString == null) {
             InputStream response = firingRequest();
             if (response == null)
-                throw new IOException("No response for '"+toString()+"'!");
-            responseString = convertToString(response);
+                responseString = "{}";
+            else
+                responseString = convertToString(response);
             closeConnection();
         }
 
         return responseString;
     }
 
-    public JSONObject getResponseAsJson() throws IOException {
+    public JSONObject getResponseAsJson() {
         if (responseJson == null)
             responseJson = new JSONObject(getResponseAsString());
 
         return responseJson;
     }
 
-    public void printResponse(PrintWriter w) {
-        try {
-            w.println(getResponseAsString());
-        } catch (Exception e) {
-            w.println("ERROR,"+toString()+","+e.getMessage());
-        }
+    public String getLimitInformation() {
+        return conn.getHeaderField("X-RateLimit-Remaining-day")+"/"+conn.getHeaderField("X-RateLimit-Limit-day")+" per day, "+
+                conn.getHeaderField("X-RateLimit-Remaining-second")+"/"+conn.getHeaderField("X-RateLimit-Limit-second")+" per second";
+
     }
 
     @Override
@@ -171,8 +170,8 @@ public class RequestNewYorkTimes implements  Request {
             request += "&fl="+returnedFields;
         if (isHighlightedResult == true)
             request += "&hl=" + String.valueOf(isHighlightedResult);
-        if (page != 1)
-            request += "&p="+String.valueOf(page);
+        if (page != 0)
+            request += "&page="+String.valueOf(page);
         if (facetFields != null)
             request += "&facet_field="+facetFields;
         if (hasFacetCount == true)
@@ -190,8 +189,7 @@ public class RequestNewYorkTimes implements  Request {
         } catch (IOException e) {
             if (e.getMessage().contains("Server returned HTTP response code: 429")) {
                 System.err.println("You have reached your limit while querying for '"+toString()+"':\n\t"+
-                        conn.getHeaderField("X-RateLimit-Remaining-day")+"/"+conn.getHeaderField("X-RateLimit-Limit-day")+" per day, "+
-                        conn.getHeaderField("X-RateLimit-Remaining-second")+"/"+conn.getHeaderField("X-RateLimit-Limit-second")+" per second.");
+                        getLimitInformation()+".");
             }
             else
                 e.printStackTrace();

@@ -26,12 +26,12 @@ public class InsertionLeadparagraph extends Insertion {
                 prepare(id, text);
                 execute();
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void prepare(int id, String text) throws SQLException {
+    private void prepare(int id, String text) throws Exception {
         prepStat = CONN.prepareStatement(QUERY);
         prepStat.setInt(1, id);
         setNVarcharValue(2, text);

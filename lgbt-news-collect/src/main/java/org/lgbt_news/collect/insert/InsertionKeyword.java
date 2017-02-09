@@ -30,7 +30,7 @@ public class InsertionKeyword extends Insertion {
                 prepare(currentId, keyword);
                 execute();
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             System.err.println("Could not insert keyword "+keyword+"!");
             e.printStackTrace();
         }
@@ -59,11 +59,11 @@ public class InsertionKeyword extends Insertion {
         }
     }
 
-    private void prepare(int id, JSONObject keyword) throws SQLException {
+    private void prepare(int id, JSONObject keyword) throws Exception {
         prepStat = CONN.prepareStatement(QUERY);
         prepStat.setInt(1, id);
-        setNVarcharValue(2, keyword.getString("name"));
-        setNVarcharValue(3, keyword.getString("value"));
+        setNVarcharValue(2, keyword.getString("name"), 50);
+        setNVarcharValue(3, keyword.getString("value"), 100);
     }
 
 

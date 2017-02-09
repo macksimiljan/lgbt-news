@@ -6,7 +6,7 @@ package org.lgbt_news.collect.request;
  * @author max
  */
 public enum QueryTerm {
-    GAY,
+    GAY, // apparently we are not allowed to query for 'gay'
     LESBIAN,
     HOMOSEXUAL;
 
