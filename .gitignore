@@ -1,0 +1,19 @@
+# Eclipse
+.classpath
+.project
+.settings/
+
+# IntelliJ Idea
+*.iml
+.idea/
+lgbt-news-collect/*.iml
+
+
+# Maven
+log/
+lgbt-news-collect/target/
+lgbt-news-analysis/target/
+
+# Resources
+lgbt-news-collect/src/main/resources/config.properties
+
