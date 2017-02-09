@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS document (
   nytidentifier CHAR(24),
   url NVARCHAR(150),
   snippet NVARCHAR(250),
-  abstract NVARCHAR(250),
+  abstract NVARCHAR(1000),
   printpage NVARCHAR(20),
   source NVARCHAR(100),
   headline NVARCHAR(100),
