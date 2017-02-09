@@ -55,8 +55,8 @@ public class RequestNewYorkTimes implements  Request {
         private String facetFields;
         private boolean hasFacetCount = false;
 
-        public Builder (String queryTerm) {
-            apiKey = "db91d31f57ce4b179374110e96429b82"; // TODO: read from file
+        public Builder (String queryTerm, String apiKey) {
+            this.apiKey = apiKey;
             this.queryTerm = queryTerm;
         }
 

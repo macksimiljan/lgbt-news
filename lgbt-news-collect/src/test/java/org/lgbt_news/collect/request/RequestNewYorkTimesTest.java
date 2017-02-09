@@ -3,6 +3,12 @@ package org.lgbt_news.collect.request;
 import org.json.JSONObject;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.lgbt_news.collect.utils.PropertyPoint;
+
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -16,8 +22,9 @@ public class RequestNewYorkTimesTest {
 
     @BeforeClass
     public static void initialize() {
+        String apiKey = PropertyPoint.getNytKeys().get(0);
         String term = QueryTerm.HOMOSEXUAL.toString();
-        request = (new RequestNewYorkTimes.Builder(term.toString())
+        request = (new RequestNewYorkTimes.Builder(term.toString(), apiKey)
                     .beginDate("19771125")
                     .endDate("19771125")
                     .returnedFields("snippet").build());
