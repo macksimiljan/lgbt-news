@@ -38,6 +38,11 @@ public class InsertionLeadparagraph extends Insertion {
     private void prepare(int id, String text) throws Exception {
         prepStat = CONN.prepareStatement(QUERY);
         prepStat.setInt(1, id);
+        if (text.length() > 2500) {
+            String orig = text;
+            text = text.substring(0, 2499);
+            logger.debug("Lead paragraph text too long, thus cut! Original: "+orig);
+        }
         setNVarcharValue(2, text);
     }
 

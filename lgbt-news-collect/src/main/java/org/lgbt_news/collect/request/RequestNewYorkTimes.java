@@ -16,7 +16,7 @@ import java.net.URL;
  */
 public class RequestNewYorkTimes implements  Request {
 
-    static final Logger errorLogger = Logger.getLogger("errorLogger");
+    static final Logger logger = Logger.getLogger("infoLogger");
 
     public enum Sort {
         NEWEST, OLDEST;
@@ -152,7 +152,7 @@ public class RequestNewYorkTimes implements  Request {
     }
 
     public String getLimitInformation() {
-        return conn.getHeaderField("X-RateLimit-Remaining-day")+"/"+conn.getHeaderField("X-RateLimit-Limit-day")+" per day and"+
+        return conn.getHeaderField("X-RateLimit-Remaining-day")+"/"+conn.getHeaderField("X-RateLimit-Limit-day")+" per day and "+
                 conn.getHeaderField("X-RateLimit-Remaining-second")+"/"+conn.getHeaderField("X-RateLimit-Limit-second")+" per second";
 
     }
@@ -194,11 +194,11 @@ public class RequestNewYorkTimes implements  Request {
                 String msg = "You have reached your limit while querying for '"+toString()+"':\n\t"+
                         getLimitInformation()+".";
                 System.err.println(msg);
-                errorLogger.error("class:"+this.getClass().getName()+"\tmessage:"+msg);
+                logger.error("class:"+this.getClass().getName()+"\tmessage:"+msg);
             }
             else {
                 e.printStackTrace();
-                errorLogger.error("class:"+this.getClass().getName()+"\tmessage:"+e.getMessage());
+                logger.error("class:"+this.getClass().getName()+"\tmessage:"+e.getMessage());
             }
         }
 
@@ -238,7 +238,7 @@ public class RequestNewYorkTimes implements  Request {
             conn.addRequestProperty("api-key", apiKey);
         } catch (java.io.IOException e) {
             e.printStackTrace();
-            errorLogger.error("class:"+this.getClass().getName()+"\tmessage:"+e.getMessage());
+            logger.error("class:"+this.getClass().getName()+"\tmessage:"+e.getMessage());
         }
     }
 

@@ -54,7 +54,7 @@ public class InsertionDocument extends Insertion {
             setNVarcharValue(12, value, 200);
         } else
             setNullValue(12, Types.NVARCHAR);
-        setNVarcharValue(13, document, "type_of_material");
+        setNVarcharValue(13, document, "type_of_material", 20);
         setIntValue(14, document, "word_count", Types.SMALLINT);
         prepStat.setInt(15, idNewspaper);
         prepStat.setInt(16, idQueryterm);

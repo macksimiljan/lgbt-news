@@ -40,12 +40,13 @@ public class App {
         apiKey = PropertyPoint.getNytKeys().get(0);
         queryterm = QueryTerm.HOMOSEXUAL.toString();
         infoLogger.info("newspaper:" + newspaper + ",queryterm:" + queryterm);
+        int interval = 2;
 
         ResponseImport.initializeIdDocument(conn);
-        for (int startYear = 1960; startYear < 1990; startYear += 5) {
+        for (int startYear = 1970; startYear < 1990; startYear += interval) {
             isFirstRequest = true;
 
-            int endYear = startYear + 4;
+            int endYear = startYear + (interval - 1);
             NytDate beginDate = new NytDate.Builder().year(startYear).createDate();
             NytDate endDate = new NytDate.Builder().year(endYear).month(12).day(31).createDate();
 
