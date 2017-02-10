@@ -7,61 +7,98 @@ import org.lgbt_news.collect.insert.DatabaseAccess;
 import org.lgbt_news.collect.insert.ResponseImport;
 import org.lgbt_news.collect.request.QueryTerm;
 import org.lgbt_news.collect.request.RequestNewYorkTimes;
+import org.lgbt_news.collect.utils.NytDate;
 import org.lgbt_news.collect.utils.PropertyPoint;
 
 import java.sql.Connection;
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author max
  */
 public class App {
 
-    public static Logger log = Logger.getLogger(App.class);
+    private static final Logger infoLogger = Logger.getLogger("infoLogger");
+    private static final Logger requestLogger = Logger.getLogger("requestLogger");
+
+    private static Connection conn;
+    private static String newspaper;
+    private static String apiKey;
+    private static String queryterm;
+
+    private static int hits = Integer.MAX_VALUE;
+    private static boolean isFirstRequest;
+
 
     public static void main(String[] args) {
         System.out.println("---");
 
-        // specify parameter
-        String apiKey = PropertyPoint.getNytKeys().get(0);
-        String queryterm = QueryTerm.HOMOSEXUAL.toString();
-        String responseFile = "./lgbt-news-collect/src/main/resources/responses.txt";
-
-
-
         DatabaseAccess db = new DatabaseAccess();
-        Connection conn = db.getDbConnection();
-        for (int page = 0; page < 3; page++) {
-            RequestNewYorkTimes.Builder builder = new RequestNewYorkTimes.Builder(queryterm, apiKey).page(page);
-            RequestNewYorkTimes request = builder.build();
-            System.out.println(request);
-            String newspaper = request.getUsedApi();
+        conn = db.getDbConnection();
+        newspaper = "New York Times";
+        apiKey = PropertyPoint.getNytKeys().get(0);
+        queryterm = QueryTerm.HOMOSEXUAL.toString();
+        infoLogger.info("newspaper:" + newspaper + ",queryterm:" + queryterm);
 
-            try {
-                // execute request
-                JSONObject jsonObject = request.getResponseAsJson();
-                log.info(jsonObject);
+        ResponseImport.initializeIdDocument(conn);
+        for (int startYear = 1960; startYear < 1990; startYear += 5) {
+            isFirstRequest = true;
 
-                JSONObject meta = jsonObject.getJSONObject("response").getJSONObject("meta");
-                JSONArray docs = jsonObject.getJSONObject("response").getJSONArray("docs");
-                System.out.println("newspaper: " + newspaper + ", queryterm: " + queryterm);
-                System.out.println("hits: " + meta.getInt("hits") + ", offset: " + meta.getInt("offset"));
-                System.out.println(request.getLimitInformation());
+            int endYear = startYear + 4;
+            NytDate beginDate = new NytDate.Builder().year(startYear).createDate();
+            NytDate endDate = new NytDate.Builder().year(endYear).month(12).day(31).createDate();
 
-                // write to database
-                Iterator<Object> iteratorDocs = docs.iterator();
-                while (iteratorDocs.hasNext()) {
-                    JSONObject response = (JSONObject) iteratorDocs.next();
-                    ResponseImport responseImport = new ResponseImport(conn, newspaper, queryterm);
-                    responseImport.excecuteImport(response);
+            int page = 0;
+            hits = Integer.MAX_VALUE;
+            while (page <= 120 && hits > 0) {
+                infoLogger.info("querying for page:" + page + ",hits left:" + hits);
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                    collectNYT(page, beginDate, endDate);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    infoLogger.error("class:App\tmessage:" + e.getMessage());
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
+                page++;
+                hits -= 10;
             }
         }
 
         db.closeDbConnection();
 
         System.out.println("---");
+    }
+
+    private static void collectNYT(int page, NytDate beginDate, NytDate endDate) {
+        RequestNewYorkTimes request = new RequestNewYorkTimes.Builder(queryterm, apiKey)
+                .page(page).beginDate(beginDate.toString()).endDate(endDate.toString()).build();
+        System.out.println(request);
+        infoLogger.info("request:"+request);
+
+        try {
+            // execute request
+            JSONObject jsonObject = request.getResponseAsJson();
+            requestLogger.info(jsonObject);
+
+            JSONObject meta = jsonObject.getJSONObject("response").getJSONObject("meta");
+            JSONArray docs = jsonObject.getJSONObject("response").getJSONArray("docs");
+            if (isFirstRequest) {
+                hits = meta.getInt("hits");
+                infoLogger.info("actual hits:" + hits + ",limit:" + request.getLimitInformation());
+                isFirstRequest = false;
+            }
+
+            // write to database
+            Iterator<Object> iteratorDocs = docs.iterator();
+            while (iteratorDocs.hasNext()) {
+                JSONObject response = (JSONObject) iteratorDocs.next();
+                ResponseImport responseImport = new ResponseImport(conn, newspaper, queryterm);
+                responseImport.excecuteImport(response);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            infoLogger.error("class:App\trequest:"+request+"\tmessage:"+e.getMessage());
+        }
     }
 }

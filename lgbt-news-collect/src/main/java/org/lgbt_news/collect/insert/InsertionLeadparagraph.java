@@ -1,5 +1,6 @@
 package org.lgbt_news.collect.insert;
 
+import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
 import java.sql.Connection;
@@ -11,6 +12,8 @@ import java.sql.Types;
  * @author max
  */
 public class InsertionLeadparagraph extends Insertion {
+
+    static final Logger logger = Logger.getLogger("infoLogger");
 
 
     private final String QUERY = "INSERT INTO leadparagraph (id_document, text) VALUES (?,?);";
@@ -28,6 +31,7 @@ public class InsertionLeadparagraph extends Insertion {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            logger.error("Could not insert lead paragraph: "+e.getMessage());
         }
     }
 

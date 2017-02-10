@@ -1,5 +1,6 @@
 package org.lgbt_news.collect.request;
 
+import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
 import java.io.*;
@@ -14,6 +15,8 @@ import java.net.URL;
  * @author max
  */
 public class RequestNewYorkTimes implements  Request {
+
+    static final Logger errorLogger = Logger.getLogger("errorLogger");
 
     public enum Sort {
         NEWEST, OLDEST;
@@ -149,7 +152,7 @@ public class RequestNewYorkTimes implements  Request {
     }
 
     public String getLimitInformation() {
-        return conn.getHeaderField("X-RateLimit-Remaining-day")+"/"+conn.getHeaderField("X-RateLimit-Limit-day")+" per day, "+
+        return conn.getHeaderField("X-RateLimit-Remaining-day")+"/"+conn.getHeaderField("X-RateLimit-Limit-day")+" per day and"+
                 conn.getHeaderField("X-RateLimit-Remaining-second")+"/"+conn.getHeaderField("X-RateLimit-Limit-second")+" per second";
 
     }
@@ -188,11 +191,15 @@ public class RequestNewYorkTimes implements  Request {
             response = conn.getInputStream();
         } catch (IOException e) {
             if (e.getMessage().contains("Server returned HTTP response code: 429")) {
-                System.err.println("You have reached your limit while querying for '"+toString()+"':\n\t"+
-                        getLimitInformation()+".");
+                String msg = "You have reached your limit while querying for '"+toString()+"':\n\t"+
+                        getLimitInformation()+".";
+                System.err.println(msg);
+                errorLogger.error("class:"+this.getClass().getName()+"\tmessage:"+msg);
             }
-            else
+            else {
                 e.printStackTrace();
+                errorLogger.error("class:"+this.getClass().getName()+"\tmessage:"+e.getMessage());
+            }
         }
 
         return response;
@@ -231,6 +238,8 @@ public class RequestNewYorkTimes implements  Request {
             conn.addRequestProperty("api-key", apiKey);
         } catch (java.io.IOException e) {
             e.printStackTrace();
+            errorLogger.error("class:"+this.getClass().getName()+"\tmessage:"+e.getMessage());
         }
     }
+
 }

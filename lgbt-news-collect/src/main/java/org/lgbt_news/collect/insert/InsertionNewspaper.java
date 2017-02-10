@@ -1,11 +1,16 @@
 package org.lgbt_news.collect.insert;
 
+import org.apache.log4j.Logger;
+
 import java.sql.*;
 
 /**
  * @author max
  */
 public class InsertionNewspaper extends  Insertion {
+
+    static final Logger logger = Logger.getLogger("infoLogger");
+
 
     private int currentId;
     private int nextId;
@@ -31,6 +36,7 @@ public class InsertionNewspaper extends  Insertion {
         } catch (SQLException e) {
             System.err.println("Could not insert ("+currentId+","+name+") into newspaper table!");
             e.printStackTrace();
+            logger.error("Could not insert ("+currentId+","+name+") into newspaper table: "+e.getMessage());
         }
     }
 

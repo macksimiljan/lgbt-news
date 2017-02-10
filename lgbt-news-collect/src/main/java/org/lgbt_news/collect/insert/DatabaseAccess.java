@@ -1,14 +1,11 @@
 package org.lgbt_news.collect.insert;
 
+import org.apache.log4j.Logger;
 import org.lgbt_news.collect.utils.PropertyPoint;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Properties;
 
 /**
  * Provides database connection as specified in 'config.properties'.
@@ -16,6 +13,8 @@ import java.util.Properties;
  * @author max
  */
 public class DatabaseAccess {
+
+    static final Logger logger = Logger.getLogger("infoLogger");
 
     private Connection dbConnection;
     private String url;
@@ -27,6 +26,7 @@ public class DatabaseAccess {
             init();
             connectToDb();
         } catch (SQLException | ClassNotFoundException e) {
+            logger.error(e.getMessage());
             e.printStackTrace();
             handleException(e.getClass().getName());
         }
@@ -41,6 +41,7 @@ public class DatabaseAccess {
             dbConnection.close();
         } catch (SQLException e) {
             e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 

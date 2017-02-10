@@ -1,5 +1,7 @@
 package org.lgbt_news.collect.insert;
 
+import org.apache.log4j.Logger;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,6 +11,9 @@ import java.sql.SQLException;
  * @author max
  */
 public class InsertionQueryterm extends Insertion {
+
+    static final Logger logger = Logger.getLogger("infoLogger");
+
 
     private int currentId;
     private int nextId;
@@ -34,6 +39,7 @@ public class InsertionQueryterm extends Insertion {
         } catch (SQLException e) {
             System.err.println("Could not insert ("+currentId+","+term+") into queryterm table!");
             e.printStackTrace();
+            logger.error("Could not insert ("+currentId+","+term+") into queryterm tablle: "+e.getMessage());
         }
     }
 

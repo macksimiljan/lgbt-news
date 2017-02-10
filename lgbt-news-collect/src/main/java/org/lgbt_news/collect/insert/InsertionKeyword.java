@@ -1,5 +1,6 @@
 package org.lgbt_news.collect.insert;
 
+import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
 import java.sql.*;
@@ -8,6 +9,9 @@ import java.sql.*;
  * @author max
  */
 public class InsertionKeyword extends Insertion {
+
+    static final Logger logger = Logger.getLogger("infoLogger");
+
 
     private int currentId;
     private int nextId;
@@ -33,6 +37,7 @@ public class InsertionKeyword extends Insertion {
         } catch (Exception e) {
             System.err.println("Could not insert keyword "+keyword+"!");
             e.printStackTrace();
+            logger.error("Could not insert keyword "+keyword+": "+e.getMessage());
         }
     }
 

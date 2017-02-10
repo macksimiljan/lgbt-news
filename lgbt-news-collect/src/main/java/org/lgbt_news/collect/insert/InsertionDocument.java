@@ -1,5 +1,7 @@
 package org.lgbt_news.collect.insert;
 
+import org.apache.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -9,6 +11,8 @@ import java.sql.*;
  * @author max
  */
 public class InsertionDocument extends Insertion {
+
+    static final Logger logger = Logger.getLogger("infoLogger");
 
     private final String QUERY = "INSERT INTO document VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
 
@@ -24,6 +28,7 @@ public class InsertionDocument extends Insertion {
         } catch (Exception e ) {
             System.err.println("Could not insert document "+document+"!");
             e.printStackTrace();
+            logger.error("Could not insert document "+document+": "+e.getMessage());
         }
     }
 
@@ -42,7 +47,9 @@ public class InsertionDocument extends Insertion {
         }
         setNVarcharValue(10, document,"pub_date", 20);
         setNVarcharValue(11, document, "document_type", 20);
-        if (document.has("byline") && !JSONObject.NULL.equals(document.get("byline"))) {
+        if (document.has("byline")
+                && document.get("byline").getClass().getSimpleName().equals("JSONObject")
+                && !JSONObject.NULL.equals(document.get("byline"))) {
             String value = document.getJSONObject("byline").toString();
             setNVarcharValue(12, value, 200);
         } else

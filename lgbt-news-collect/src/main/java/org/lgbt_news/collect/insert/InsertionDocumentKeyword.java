@@ -1,5 +1,6 @@
 package org.lgbt_news.collect.insert;
 
+import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
 import java.sql.Connection;
@@ -10,6 +11,8 @@ import java.sql.SQLException;
  * @author max
  */
 public class InsertionDocumentKeyword extends  Insertion{
+
+    static final Logger logger = Logger.getLogger("infoLogger");
 
     private final String QUERY = "INSERT INTO document_keyword VALUES (?,?);";
 
@@ -22,7 +25,7 @@ public class InsertionDocumentKeyword extends  Insertion{
             prepare(idDocument, idKeyword);
             execute();
         } catch (SQLException e) {
-            System.err.println("Could not insert ("+idDocument+","+idKeyword+") " +
+            logger.error("Could not insert ("+idDocument+","+idKeyword+") " +
                     "into document_keyword table: "+e.getMessage()+"!");
         }
     }

@@ -9,7 +9,6 @@ import org.json.*;
  */
 public interface Request {
 
-
     String getUsedApi();
     String getResponseAsString() throws IOException;
     JSONObject getResponseAsJson() throws IOException;
