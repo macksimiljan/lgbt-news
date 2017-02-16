@@ -12,7 +12,7 @@ import java.util.Properties;
  */
 public class PropertyPoint {
 
-    private static final String FILE = "./lgbt-news-collect/src/main/resources/config.properties";
+    private static final String FILE = "/home/max/git/lgbt-news//lgbt-news-collect/src/main/resources/config.properties";
 
 
     private static List<String> nytKeys;
