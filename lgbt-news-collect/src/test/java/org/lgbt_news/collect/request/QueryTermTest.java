@@ -12,8 +12,9 @@ public class QueryTermTest {
 
     @Test
     public void test_toString() {
-        assertEquals("gay", QueryTerm.GAY.toString());
-        assertEquals("GAY", QueryTerm.GAY.name());
+        assertEquals("lesbian", QueryTerm.LESBIAN.toString());
+        assertEquals("TRANSGENDER", QueryTerm.TRANSGENDER.name());
+        assertEquals("\\\"gay community\\\"", QueryTerm.GAY_COMMUNITY.toString());
     }
 
 }

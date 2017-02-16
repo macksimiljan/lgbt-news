@@ -38,12 +38,12 @@ public class App {
         conn = db.getDbConnection();
         newspaper = "New York Times";
         apiKey = PropertyPoint.getNytKeys().get(0);
-        queryterm = QueryTerm.HOMOSEXUAL.toString();
+        queryterm = QueryTerm.GAY_COMMUNITY.toString();
         infoLogger.info("newspaper:" + newspaper + ",queryterm:" + queryterm);
         int interval = 2;
 
         ResponseImport.initializeIdDocument(conn);
-        for (int startYear = 1970; startYear < 1990; startYear += interval) {
+        for (int startYear = 1972; startYear < 2018; startYear += interval) {
             isFirstRequest = true;
 
             int endYear = startYear + (interval - 1);

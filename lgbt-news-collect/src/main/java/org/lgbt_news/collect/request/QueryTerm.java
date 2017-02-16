@@ -6,13 +6,22 @@ package org.lgbt_news.collect.request;
  * @author max
  */
 public enum QueryTerm {
-    GAY, // apparently we are not allowed to query for 'gay'
+    BISEXUAL,
+    GAY_COMMUNITY,
+    GAY_MARRIAGE,
+    GAY_RIGHTS,
+    HOMOSEXUAL,
     LESBIAN,
-    HOMOSEXUAL;
+    TRANSGENDER,
+    TRANSSEXUAL;
+    // add: same-sex
 
 
     @Override
     public String toString() {
-        return super.toString().toLowerCase();
+        String str = super.toString().toLowerCase();
+        if (str.contains("_"))
+            str = "\""+str.replace("_", "+")+"\"";
+        return str;
     }
 }

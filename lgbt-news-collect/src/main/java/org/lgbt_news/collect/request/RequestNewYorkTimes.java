@@ -160,7 +160,8 @@ public class RequestNewYorkTimes implements  Request {
     @Override
     public String toString() {
         String request = "https://api.nytimes.com/svc/search/v2/articlesearch.json?";
-        request += "q="+queryTerm;
+        request += "api-key="+apiKey;
+        request += "&q="+queryTerm;
         if (filterQuery != null)
             request += "&fq="+filterQuery;
         if (beginDate != null)
