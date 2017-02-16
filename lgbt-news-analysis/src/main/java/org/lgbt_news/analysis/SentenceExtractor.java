@@ -19,105 +19,67 @@ public class SentenceExtractor {
     static final Logger logger = Logger.getLogger("infoLogger");
 
     private final Connection CONN;
-    private final String QUERYTERM;
-
-    private final String SQL_DOCUMENT;
-    {
-        SQL_DOCUMENT = "SELECT d.id FROM document d, queryterm q WHERE d.id_queryterm = q.id AND q.term = ?;";
-    }
 
     private final String SQL_LEADPARAGRAPH;
     {
-        SQL_LEADPARAGRAPH = "SELECT text FROM leadparagraph WHERE id_document = ? AND text LIKE ?;";
+        SQL_LEADPARAGRAPH = "SELECT text FROM leadparagraph WHERE text LIKE ?;";
     }
 
     private String containedWord;
 
 
-    public SentenceExtractor(Connection connection, String queryterm) {
+    public SentenceExtractor(Connection connection) {
         CONN = connection;
-        QUERYTERM = queryterm;
-        containedWord = queryterm;
+        containedWord = "";
     }
 
 
     public List<String> getAllSentenceContexts(String containedWord) {
         this.containedWord = containedWord;
-        return getAllSentenceContexts();
-    }
-
-    public List<String> getAllSentenceContexts() {
         List<String> contexts = new ArrayList<>();
         try {
-            contexts = querySentenceContexts();
+            contexts = querySentencesWithContainedWord();
         } catch (Exception e) {
             handleException(e);
         }
+
         return  contexts;
     }
 
-    private List<String> querySentenceContexts() {
+    private List<String> querySentencesWithContainedWord() throws SQLException {
         List<String> sentences = new ArrayList<>();
-        try {
-            Set<Integer> docsOfQueryterm = queryDocumentIds();
-            System.out.println("#docs:"+docsOfQueryterm.size());
-            PreparedStatement prepStmt = createPreparedStatementForTexts();
-            for (int idDocument : docsOfQueryterm) {
-                List<String> sentencesPerDocument = querySentencesWithContainedWord(prepStmt, idDocument);
-                sentences.addAll(sentencesPerDocument);
-            }
-            prepStmt.close();
-        } catch (SQLException e) {
-            handleException(e);
+
+        PreparedStatement prepStmt = createPreparedStatementForTexts();
+        ResultSet texts = prepStmt.executeQuery();
+        int count = 0;
+        while (texts.next()) {
+            count++;
+            String text = texts.getString(1);
+            List<String> sentencesPerText = extractContainingSentencesFromText(text, containedWord);
+            sentences.addAll(sentencesPerText);
         }
+        System.out.println(count);
+        System.out.println(sentences.size());
+        prepStmt.close();
 
         return sentences;
-    }
-
-    private Set<Integer> queryDocumentIds() {
-        Set<Integer> documentIds = new HashSet<>();
-        try {
-            PreparedStatement prepStmt = CONN.prepareStatement(SQL_DOCUMENT);
-            prepStmt.setString(1, QUERYTERM);
-            ResultSet resultSet = prepStmt.executeQuery();
-            while (resultSet.next())
-                documentIds.add(resultSet.getInt(1));
-            prepStmt.close();
-        } catch (SQLException e) {
-            handleException(e);
-        }
-
-        return documentIds;
     }
 
     private PreparedStatement createPreparedStatementForTexts() throws SQLException {
         PreparedStatement prepStmt = CONN.prepareStatement(SQL_LEADPARAGRAPH);
         String condition = "%" + containedWord + "%";
-        prepStmt.setString(2, condition);
+        prepStmt.setString(1, condition);
         return prepStmt;
-    }
-
-    private List<String> querySentencesWithContainedWord(PreparedStatement prepStmt, int idDocument) throws SQLException {
-        List<String> sentencesPerDocument = new ArrayList<>();
-
-        prepStmt.setInt(1, idDocument);
-        ResultSet texts = prepStmt.executeQuery();
-        while (texts.next()) {
-            String text = texts.getString(1);
-            List<String> sentencesPerText = extractContainingSentencesFromText(text, containedWord);
-            sentencesPerDocument.addAll(sentencesPerText);
-        }
-
-        return sentencesPerDocument;
     }
 
     public static List<String> extractContainingSentencesFromText(String text, String containedWord) {
         List<String> extractedSentences = new ArrayList<>();
         String[] sentences = text.split("\\.");
         for (String s : sentences) {
-            if (s.contains(containedWord))
+            if (s.toLowerCase().contains(containedWord.toLowerCase()))
                 extractedSentences.add(s.trim()+".");
         }
+
         return extractedSentences;
     }
 

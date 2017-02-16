@@ -19,14 +19,11 @@ public class SentenceExtractorTest {
         Connection connection = db.getDbConnection();
         String queryterm = QueryTerm.TRANSGENDER.toString();
 
-        SentenceExtractor extractor = new SentenceExtractor(connection, queryterm);
-        List<String> sentences = extractor.getAllSentenceContexts();
-        System.out.println("There are "+sentences.size()+" sentence(s) for "+queryterm+".");
-
-        // TODO: scheint nicht korrekt zu sein
-
+        SentenceExtractor extractor = new SentenceExtractor(connection);
+        List<String> sentences = extractor.getAllSentenceContexts(queryterm);
         db.closeDbConnection();
 
+        assertEquals(3065, sentences.size());
     }
 
     @Test
