@@ -7,9 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author max
@@ -26,19 +24,26 @@ public class SentenceExtractor {
     }
 
     private String containedWord;
+    private int halfWindowSize;
 
 
     public SentenceExtractor(Connection connection) {
         CONN = connection;
         containedWord = "";
+        halfWindowSize = 0;
     }
 
 
-    public List<String> getAllSentenceContexts(String containedWord) {
+    public List<String> getSentenceContexts(String containedWord) {
+        return getWindowContexts(containedWord, 0);
+    }
+
+    public List<String> getWindowContexts(String containedWord, int halfWindowSize) {
         this.containedWord = containedWord;
+        this.halfWindowSize = halfWindowSize;
         List<String> contexts = new ArrayList<>();
         try {
-            contexts = querySentencesWithContainedWord();
+            contexts = queryWindowsWithContainedWord();
         } catch (Exception e) {
             handleException(e);
         }
@@ -46,20 +51,16 @@ public class SentenceExtractor {
         return  contexts;
     }
 
-    private List<String> querySentencesWithContainedWord() throws SQLException {
+    private List<String> queryWindowsWithContainedWord() throws SQLException {
         List<String> sentences = new ArrayList<>();
 
         PreparedStatement prepStmt = createPreparedStatementForTexts();
         ResultSet texts = prepStmt.executeQuery();
-        int count = 0;
         while (texts.next()) {
-            count++;
             String text = texts.getString(1);
-            List<String> sentencesPerText = extractContainingSentencesFromText(text, containedWord);
-            sentences.addAll(sentencesPerText);
+            List<String> windowsPerText = extractContainingWindowsFromText(text, containedWord, halfWindowSize);
+            sentences.addAll(windowsPerText);
         }
-        System.out.println(count);
-        System.out.println(sentences.size());
         prepStmt.close();
 
         return sentences;
@@ -73,14 +74,36 @@ public class SentenceExtractor {
     }
 
     public static List<String> extractContainingSentencesFromText(String text, String containedWord) {
-        List<String> extractedSentences = new ArrayList<>();
-        String[] sentences = text.split("\\.");
-        for (String s : sentences) {
-            if (s.toLowerCase().contains(containedWord.toLowerCase()))
-                extractedSentences.add(s.trim()+".");
+        List<String> extractedSentences = extractContainingWindowsFromText(text, containedWord, 0);
+        return extractedSentences;
+    }
+
+    public static List<String> extractContainingWindowsFromText(String text, String containedWord, int halfWindowSize) {
+        List<String> extractedWindows = new ArrayList<>();
+        final String[] sentences = text.split("\\.");
+        for (int i = 0; i < sentences.length; i++) {
+            String currentSentence = sentences[i];
+            if (currentSentence.toLowerCase().contains(containedWord.toLowerCase())) {
+                String window = buildWindow(sentences, i, halfWindowSize);
+                extractedWindows.add(window);
+            }
         }
 
-        return extractedSentences;
+        return extractedWindows;
+    }
+
+    private static String buildWindow(String[] sentences, int currentSentencePosition, int halfWindowSize) {
+        String window = "";
+
+        int windowEnd = currentSentencePosition + halfWindowSize;
+        windowEnd = (windowEnd >= sentences.length) ? sentences.length-1 : windowEnd;
+        int windowStart = currentSentencePosition - halfWindowSize;
+        windowStart = (windowStart < 0) ? 0 : windowStart;
+
+        for (int i = windowStart; i <= windowEnd; i++)
+            window += sentences[i].trim()+". ";
+
+        return window.trim();
     }
 
     private void handleException(Exception e) {
