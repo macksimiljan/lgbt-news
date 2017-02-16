@@ -7,6 +7,7 @@ import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.sentiment.SentimentCoreAnnotations;
 import edu.stanford.nlp.trees.Tree;
 import edu.stanford.nlp.util.CoreMap;
+import org.ejml.simple.SimpleMatrix;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,29 +18,37 @@ import java.util.Properties;
  */
 public class SentimentAnnotator {
 
+    private List<SentimentCategory> categoriesPerSentence;
+    private List<double[]> predictionsPerSentence;
 
     private StanfordCoreNLP pipeline;
 
     public SentimentAnnotator() {
+        resetLists();
+
         Properties props = new Properties();
         props.setProperty("annotators", "tokenize,ssplit,pos,parse,sentiment");
         pipeline = new StanfordCoreNLP(props);
     }
 
-    public SentimentCategory aggregateSentimentByMajority(List<SentimentCategory> categories) {
-        return null;
+    public List<SentimentCategory> getCategoriesPerSentence() {
+        return categoriesPerSentence;
     }
 
-    public List<SentimentCategory> execute(String text) {
-        List<SentimentCategory> categoriesPerSentence = new ArrayList<>();
+    public List<double[]> getPredictionsPerSentence() {
+        return predictionsPerSentence;
+    }
 
+    public void execute(String text) {
+        resetLists();
         List<CoreMap> sentences = parseSentences(text);
-        for (CoreMap sentence : sentences) {
-            int categoryId = categorize(sentence);
-            SentimentCategory category = SentimentCategory.idToCategory(categoryId);
-            categoriesPerSentence.add(category);
-        }
-        return categoriesPerSentence;
+        for (CoreMap sentence : sentences)
+            categorize(sentence);
+    }
+
+    private void resetLists() {
+        categoriesPerSentence = new ArrayList<>();
+        predictionsPerSentence = new ArrayList<>();
     }
 
     private List<CoreMap> parseSentences(String text) {
@@ -47,8 +56,23 @@ public class SentimentAnnotator {
         return annotation.get(CoreAnnotations.SentencesAnnotation.class);
     }
 
-    private int categorize(CoreMap sentence) {
+    private void categorize(CoreMap sentence) {
         Tree tree = sentence.get(SentimentCoreAnnotations.SentimentAnnotatedTree.class);
-        return RNNCoreAnnotations.getPredictedClass(tree);
+        int categoryId = RNNCoreAnnotations.getPredictedClass(tree);
+        SimpleMatrix matrix = RNNCoreAnnotations.getPredictions(tree);
+        double[] predictions = matrix.getMatrix().getData();
+
+        addCategory(categoryId);
+        addPredictions(predictions);
     }
+
+    private void addCategory(int categoryId) {
+        SentimentCategory category = SentimentCategory.idToCategory(categoryId);
+        categoriesPerSentence.add(category);
+    }
+
+    private void addPredictions(double[] predictions) {
+        predictionsPerSentence.add(predictions);
+    }
+
 }
