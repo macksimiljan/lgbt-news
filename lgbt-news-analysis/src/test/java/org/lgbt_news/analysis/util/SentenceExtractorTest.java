@@ -1,6 +1,7 @@
-package org.lgbt_news.analysis;
+package org.lgbt_news.analysis.util;
 
 import org.junit.Test;
+import org.lgbt_news.analysis.util.SentenceExtractor;
 import org.lgbt_news.collect.insert.DatabaseAccess;
 import org.lgbt_news.collect.request.QueryTerm;
 

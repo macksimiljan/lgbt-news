@@ -1,4 +1,4 @@
-package org.lgbt_news.analysis;
+package org.lgbt_news.analysis.util;
 
 import org.apache.log4j.Logger;
 
@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class SentenceExtractor {
 
-    static final Logger logger = Logger.getLogger("infoLogger");
+    private static final Logger logger = Logger.getLogger("infoLogger");
 
     private final Connection CONN;
 
@@ -74,8 +74,7 @@ public class SentenceExtractor {
     }
 
     public static List<String> extractContainingSentencesFromText(String text, String containedWord) {
-        List<String> extractedSentences = extractContainingWindowsFromText(text, containedWord, 0);
-        return extractedSentences;
+        return extractContainingWindowsFromText(text, containedWord, 0);
     }
 
     public static List<String> extractContainingWindowsFromText(String text, String containedWord, int halfWindowSize) {
