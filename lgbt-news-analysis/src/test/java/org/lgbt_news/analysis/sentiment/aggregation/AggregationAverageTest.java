@@ -29,7 +29,7 @@ public class AggregationAverageTest {
 
     @Test
     public void test_aggregatePredictions() throws Exception {
-        AggregationAverage aggregationAverage = new AggregationAverage();
+        AggregationAverage aggregation = new AggregationAverage();
 
         double[] probabilities1 = {0.08, 0.5, 0.01, 0.01, 0.4};
         double[] probabilities2 = {0.01, 0.4, 0.1, 0.2, 0.29};
@@ -40,7 +40,8 @@ public class AggregationAverageTest {
         predictions.add(probabilities2);
         predictions.add(probabilities3);
         predictions.add(probabilities4);
-        assertEquals(SentimentCategory.NEG, aggregationAverage.aggregatePredictions(predictions));
+        SentimentCategory actualCat = SentimentCategory.getCategoryFromPredictions(aggregation.aggregatePredictions(predictions));
+        assertEquals(SentimentCategory.NEG, actualCat);
 
         double[] probabilities5 = {0.08, 0.5, 0.01, 0.01, 0.4};
         double[] probabilities6 = {0.01, 0.4, 0.1, 0.2, 0.29};
@@ -51,7 +52,8 @@ public class AggregationAverageTest {
         predictions.add(probabilities6);
         predictions.add(probabilities7);
         predictions.add(probabilities8);
-        assertEquals(SentimentCategory.VERY_POS, aggregationAverage.aggregatePredictions(predictions));
+        actualCat = SentimentCategory.getCategoryFromPredictions(aggregation.aggregatePredictions(predictions));
+        assertEquals(SentimentCategory.VERY_POS, actualCat);
     }
 
 }

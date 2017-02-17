@@ -31,13 +31,15 @@ public enum SentimentCategory {
     public static SentimentCategory getCategoryFromPredictions(double[] predictions) {
         double maxPrediction = -1;
         SentimentCategory category = null;
-        for (int i = 0; i < predictions.length; i++) {
-            if (predictions[i] > maxPrediction) {
-                maxPrediction = predictions[i];
-                category = SentimentCategory.idToCategory(i);
+        if (predictions != null) {
+            for (int i = 0; i < predictions.length; i++) {
+                if (predictions[i] > maxPrediction) {
+                    maxPrediction = predictions[i];
+                    category = SentimentCategory.idToCategory(i);
+                }
             }
         }
-        return  category;
+        return category;
     }
 
     @Override

@@ -17,6 +17,7 @@ lgbt-news-analysis/target/
 # Resources
 lgbt-news-collect/src/main/resources/config.properties
 lgbt-news-collect/src/main/resources/*.log
-lgbt-news-analysis/src/main/resources/*.log
 lgbt-news-collect/src/main/resources/history/
 
+lgbt-news-analysis/src/main/resources/*.log
+lgbt-news-analysis/src/main/resources/sentimentAnalysis_*

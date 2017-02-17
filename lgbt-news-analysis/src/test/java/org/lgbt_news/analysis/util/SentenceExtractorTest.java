@@ -7,8 +7,9 @@ import org.lgbt_news.collect.utils.NytDate;
 
 import java.sql.Connection;
 import java.util.List;
+import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author max
@@ -22,10 +23,10 @@ public class SentenceExtractorTest {
 
         SentenceExtractor extractor = new SentenceExtractor(connection);
         NytDate pubDate = new NytDate.Builder().year(2017).createDate();
-        List<String> sentences = extractor.getSentenceContexts(queryterm, pubDate);
+        Set<String> sentences = extractor.getSentenceContexts(queryterm, pubDate);
         db.closeDbConnection();
 
-        assertEquals(3065, sentences.size());
+        assertEquals(60, sentences.size());
     }
 
     @Test

@@ -47,7 +47,8 @@ public class AggregationMajorityVoteTest {
         predictions.add(probabilities2);
         predictions.add(probabilities3);
         predictions.add(probabilities4);
-        assertEquals(SentimentCategory.NEG, aggregation.aggregatePredictions(predictions));
+        SentimentCategory actualCat = SentimentCategory.getCategoryFromPredictions(aggregation.aggregatePredictions(predictions));
+        assertEquals(SentimentCategory.NEG, actualCat);
 
         double[] probabilities5 = {0.08, 0.5, 0.01, 0.01, 0.4};
         double[] probabilities6 = {0.01, 0.4, 0.1, 0.2, 0.29};
@@ -58,23 +59,8 @@ public class AggregationMajorityVoteTest {
         predictions.add(probabilities6);
         predictions.add(probabilities7);
         predictions.add(probabilities8);
-        assertEquals(SentimentCategory.NEG, aggregation.aggregatePredictions(predictions));
-
-    }
-
-    @Test
-    public void test_getProbability() throws Exception {
-        AggregationMajorityVote aggregation = new AggregationMajorityVote();
-
-        List<SentimentCategory> categories = Arrays.asList(
-                SentimentCategory.NEG, SentimentCategory.NEG, SentimentCategory.NEG, SentimentCategory.POS);
-        aggregation.aggregateCategories(categories);
-        assertEquals(1.0, aggregation.getProbability(), 0.000001);
-
-        categories = Arrays.asList(
-                SentimentCategory.NEG, SentimentCategory.NEG, SentimentCategory.POS, SentimentCategory.POS);
-        aggregation.aggregateCategories(categories);
-        assertEquals(0.5, aggregation.getProbability(), 0.000001);
+        actualCat = SentimentCategory.getCategoryFromPredictions(aggregation.aggregatePredictions(predictions));
+        assertEquals(SentimentCategory.NEG, actualCat);
 
     }
 

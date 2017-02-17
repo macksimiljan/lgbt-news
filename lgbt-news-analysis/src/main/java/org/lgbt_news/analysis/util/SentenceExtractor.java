@@ -44,15 +44,15 @@ public class SentenceExtractor {
     }
 
 
-    public List<String> getSentenceContexts(String containedWord, NytDate pubDate) {
+    public Set<String> getSentenceContexts(String containedWord, NytDate pubDate) {
         return getWindowContexts(containedWord, pubDate,0);
     }
 
-    public List<String> getWindowContexts(String containedWord, NytDate pubDate, int halfWindowSize) {
+    public Set<String> getWindowContexts(String containedWord, NytDate pubDate, int halfWindowSize) {
         this.pubDate = pubDate;
         this.containedWord = containedWord;
         this.halfWindowSize = halfWindowSize;
-        List<String> contexts = new ArrayList<>();
+        Set<String> contexts = new HashSet<>();
         try {
             contexts = queryContexts();
         } catch (Exception e) {
@@ -62,8 +62,8 @@ public class SentenceExtractor {
         return  contexts;
     }
 
-    private List<String> queryContexts() {
-        List<String> contexts = new ArrayList<>();
+    private Set<String> queryContexts() {
+        Set<String> contexts = new HashSet<>();
         try {
             Set<Integer> documentIds = queryDocumentIds();
             PreparedStatement stmtTexts = createPreparedStatementForTexts();
