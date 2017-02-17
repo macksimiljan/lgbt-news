@@ -1,9 +1,9 @@
 package org.lgbt_news.analysis.util;
 
 import org.junit.Test;
-import org.lgbt_news.analysis.util.SentenceExtractor;
 import org.lgbt_news.collect.insert.DatabaseAccess;
 import org.lgbt_news.collect.request.QueryTerm;
+import org.lgbt_news.collect.utils.NytDate;
 
 import java.sql.Connection;
 import java.util.List;
@@ -21,7 +21,8 @@ public class SentenceExtractorTest {
         String queryterm = QueryTerm.TRANSGENDER.toString();
 
         SentenceExtractor extractor = new SentenceExtractor(connection);
-        List<String> sentences = extractor.getSentenceContexts(queryterm);
+        NytDate pubDate = new NytDate.Builder().year(2017).createDate();
+        List<String> sentences = extractor.getSentenceContexts(queryterm, pubDate);
         db.closeDbConnection();
 
         assertEquals(3065, sentences.size());
