@@ -31,10 +31,11 @@ public class SentenceExtractorTest {
 
     @Test
     public void test_extractContainingSentencesFromText() {
-        String text = "Ich gehe nach Hause. Ich mag Hunde. Hunde sind wirklich toll. Ich mag Sonne.";
+        String text = "Ich gehe nach Hause. Ich mag Hunde von M. Musterman. Hunde sind wirklich toll. Ich mag Sonne.";
         String containedWord = "Hund";
-        int actualNoSentences = SentenceExtractor.extractContainingSentencesFromText(text, containedWord).size();
-        assertEquals(2, actualNoSentences);
+        List<String> sentences = SentenceExtractor.extractContainingSentencesFromText(text, containedWord);
+        assertEquals("Ich mag Hunde von M. Musterman.", sentences.get(0));
+        assertEquals("Hunde sind wirklich toll.", sentences.get(1));
     }
 
     @Test

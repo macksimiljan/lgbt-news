@@ -1,5 +1,8 @@
 package org.lgbt_news.analysis.util;
 
+import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+import edu.stanford.nlp.simple.Document;
+import edu.stanford.nlp.simple.Sentence;
 import org.apache.log4j.Logger;
 import org.lgbt_news.collect.utils.NytDate;
 
@@ -7,10 +10,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author max
@@ -123,10 +123,12 @@ public class SentenceExtractor {
 
     public static List<String> extractContainingWindowsFromText(String text, String containedWord, int halfWindowSize) {
         List<String> extractedWindows = new ArrayList<>();
-        final String[] sentences = text.split("\\.");
-        for (int i = 0; i < sentences.length; i++) {
-            String currentSentence = sentences[i];
-            if (currentSentence.toLowerCase().contains(containedWord.toLowerCase())) {
+
+        Document document = new Document(text);
+        List<Sentence> sentences = document.sentences();
+        for (int i = 0; i < sentences.size(); i++) {
+            Sentence currentSentence = sentences.get(i);
+            if (currentSentence.text().toLowerCase().contains(containedWord.toLowerCase())) {
                 String window = buildWindow(sentences, i, halfWindowSize);
                 extractedWindows.add(window);
             }
@@ -135,16 +137,16 @@ public class SentenceExtractor {
         return extractedWindows;
     }
 
-    private static String buildWindow(String[] sentences, int currentSentencePosition, int halfWindowSize) {
+    private static String buildWindow(List<Sentence> sentences, int currentSentencePosition, int halfWindowSize) {
         String window = "";
 
         int windowEnd = currentSentencePosition + halfWindowSize;
-        windowEnd = (windowEnd >= sentences.length) ? sentences.length-1 : windowEnd;
+        windowEnd = (windowEnd >= sentences.size()) ? sentences.size()-1 : windowEnd;
         int windowStart = currentSentencePosition - halfWindowSize;
         windowStart = (windowStart < 0) ? 0 : windowStart;
 
         for (int i = windowStart; i <= windowEnd; i++)
-            window += sentences[i].trim()+". ";
+            window += sentences.get(i).text()+" ";
 
         return window.trim();
     }
