@@ -7,6 +7,11 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * Specific elements of the list of elements/ predictions are seen as elite.
+ * They have more strength in the aggregation.
+ * E.g.: {POS, NEG, NEG} with POS as elite yields POS due to (elite) majority vote
+ * with stength of 3 (or greater): 3 votes for POS, 2 votes for NEG.
+ *
  * @author max
  */
 public class AggregationEliteGroup implements Aggregation {

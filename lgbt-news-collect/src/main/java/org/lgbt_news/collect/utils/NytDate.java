@@ -48,6 +48,10 @@ public class NytDate {
         return new Builder().year(1851).month(9).day(18).createDate();
     }
 
+    public int getYear() {
+        return year;
+    }
+
     public String toString() {
         String date = String.valueOf(year);
         date += (month < 10) ? "0"+month : month;
