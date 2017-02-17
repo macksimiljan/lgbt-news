@@ -18,8 +18,8 @@ import java.util.Properties;
  */
 public class SentimentAnnotator {
 
-    private List<SentimentCategory> categoriesPerSentence;
-    private List<double[]> predictionsPerSentence;
+    private List<SentimentCategory> sentenceCategories;
+    private List<double[]> sentencePredictions;
 
     private StanfordCoreNLP pipeline;
 
@@ -31,12 +31,12 @@ public class SentimentAnnotator {
         pipeline = new StanfordCoreNLP(props);
     }
 
-    public List<SentimentCategory> getCategoriesPerSentence() {
-        return categoriesPerSentence;
+    public List<SentimentCategory> getSentenceCategories() {
+        return sentenceCategories;
     }
 
-    public List<double[]> getPredictionsPerSentence() {
-        return predictionsPerSentence;
+    public List<double[]> getSentencePredictions() {
+        return sentencePredictions;
     }
 
     public void execute(String text) {
@@ -47,8 +47,8 @@ public class SentimentAnnotator {
     }
 
     private void resetLists() {
-        categoriesPerSentence = new ArrayList<>();
-        predictionsPerSentence = new ArrayList<>();
+        sentenceCategories = new ArrayList<>();
+        sentencePredictions = new ArrayList<>();
     }
 
     private List<CoreMap> parseSentences(String text) {
@@ -68,11 +68,11 @@ public class SentimentAnnotator {
 
     private void addCategory(int categoryId) {
         SentimentCategory category = SentimentCategory.idToCategory(categoryId);
-        categoriesPerSentence.add(category);
+        sentenceCategories.add(category);
     }
 
     private void addPredictions(double[] predictions) {
-        predictionsPerSentence.add(predictions);
+        sentencePredictions.add(predictions);
     }
 
 }
