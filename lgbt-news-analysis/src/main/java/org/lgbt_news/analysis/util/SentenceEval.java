@@ -2,6 +2,8 @@ package org.lgbt_news.analysis.util;
 
 import org.lgbt_news.analysis.sentiment.SentimentCategory;
 import org.lgbt_news.analysis.sentiment.aggregation.Aggregation;
+import org.lgbt_news.analysis.sentiment.filter.Filter;
+import org.lgbt_news.analysis.sentiment.filter.FilterThreshold;
 
 import java.util.List;
 
@@ -36,6 +38,10 @@ public class SentenceEval {
         return SentimentCategory.getCategoryFromPredictions(aggregatedPredictions);
     }
 
+    public SentimentCategory getCategory(Filter filter) {
+        return filter.apply(aggregatedPredictions);
+    }
+
     public double[] getAggregatedPredictions(Aggregation aggregation) {
         if (aggregatedPredictions == null && predictions.size() == 1)
             aggregatedPredictions = predictions.get(0);
@@ -66,7 +72,8 @@ public class SentenceEval {
 
         String aggregatedPredictString = predictionsToString(aggregatedPredictions);
 
-        return id+"\t"+window+"\t"+predictionsString+"\t"+aggregatedPredictString+"\t"+getCategory();
+        Filter filter = new FilterThreshold(0.25);
+        return id+"\t"+window+"\t"+predictionsString+"\t"+aggregatedPredictString+"\t"+getCategory(filter);
     }
 
     private String predictionsToString(double[] p) {

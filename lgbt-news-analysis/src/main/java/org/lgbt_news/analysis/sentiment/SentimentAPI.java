@@ -21,7 +21,7 @@ import java.util.Set;
  */
 public class SentimentAPI {
 
-    static final Logger logger = Logger.getLogger("infoLogger");
+    private static final Logger logger = Logger.getLogger("infoLogger");
 
     private final Connection CONN;
 

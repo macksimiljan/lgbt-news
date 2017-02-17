@@ -24,9 +24,9 @@ public class SentenceExtractorTest {
         SentenceExtractor extractor = new SentenceExtractor(connection);
         NytDate pubDate = new NytDate.Builder().year(2017).createDate();
         Set<String> sentences = extractor.getSentenceContexts(queryterm, pubDate);
-        db.closeDbConnection();
-
         assertEquals(60, sentences.size());
+
+        db.closeDbConnection();
     }
 
     @Test
