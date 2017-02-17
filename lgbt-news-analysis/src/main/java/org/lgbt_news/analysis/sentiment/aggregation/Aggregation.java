@@ -10,7 +10,6 @@ import java.util.List;
 public interface Aggregation {
 
     SentimentCategory aggregateCategories(List<SentimentCategory> categories);
-    SentimentCategory aggregatePredictions(List<double[]> predictions);
-    double getProbability();
+    double[] aggregatePredictions(List<double[]> predictions);
 
 }

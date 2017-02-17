@@ -16,10 +16,14 @@ import java.util.Map;
  */
 public class AggregationMajorityVote implements Aggregation {
 
-    private double probability;
+    private int noOfWinners;
 
     public AggregationMajorityVote() {
-        probability = -1;
+        noOfWinners = 1;
+    }
+
+    public int getNoOfWinners() {
+        return noOfWinners;
     }
 
     @Override
@@ -36,7 +40,7 @@ public class AggregationMajorityVote implements Aggregation {
 
         SentimentCategory winner = null;
         int maxCount = -1;
-        int noOfMaxima = 1;
+
         for (Map.Entry<SentimentCategory, Integer> entry : map.entrySet()) {
             int val = entry.getValue();
             if (val > maxCount) {
@@ -44,28 +48,26 @@ public class AggregationMajorityVote implements Aggregation {
                 winner = entry.getKey();
             } else if (val == maxCount) {
                 winner = (entry.getKey().categoryToId() < winner.categoryToId()) ? entry.getKey() : winner;
-                noOfMaxima++;
+                noOfWinners++;
             }
         }
-
-        probability = 1.0 / noOfMaxima;
 
         return winner;
     }
 
     @Override
-    public SentimentCategory aggregatePredictions(List<double[]> predictions) {
+    public double[] aggregatePredictions(List<double[]> predictions) {
         List<SentimentCategory> categories = new ArrayList<>();
         for (double[] p : predictions)
             categories.add(SentimentCategory.getCategoryFromPredictions(p));
 
-        return aggregateCategories(categories);
+        SentimentCategory aggregatedCategory = aggregateCategories(categories);
+
+        double[] aggregatedPredictions = new double[predictions.get(0).length];
+        for (int i = 0; i < aggregatedPredictions.length; i++)
+            aggregatedPredictions[i] = (i == aggregatedCategory.categoryToId()) ? 1.0 : 0.0;
+
+        return aggregatedPredictions;
     }
 
-
-
-    @Override
-    public double getProbability() {
-        return probability;
-    }
 }

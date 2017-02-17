@@ -44,7 +44,7 @@ public class AggregationEliteGroup implements Aggregation {
     }
 
     @Override
-    public SentimentCategory aggregatePredictions(List<double[]> predictions) {
+    public double[] aggregatePredictions(List<double[]> predictions) {
         for (int index : indicesOfElite) {
             double[] elitePrediction = predictions.get(index);
             for (int i = 0; i < STRENGTH_OF_ELITE; i++) {
@@ -55,8 +55,4 @@ public class AggregationEliteGroup implements Aggregation {
         return majorityVote.aggregatePredictions(predictions);
     }
 
-    @Override
-    public double getProbability() {
-        return majorityVote.getProbability();
-    }
 }

@@ -9,15 +9,8 @@ import java.util.List;
  */
 public class AggregationAverage implements  Aggregation {
 
-    private double probability;
-
-    public AggregationAverage() {
-        resetProbability();
-    }
-
     @Override
     public SentimentCategory aggregateCategories(List<SentimentCategory> categories) {
-        resetProbability();
         int sum = 0;
         for (SentimentCategory c : categories) {
             int id = c.categoryToId();
@@ -29,32 +22,17 @@ public class AggregationAverage implements  Aggregation {
     }
 
     @Override
-    public SentimentCategory aggregatePredictions(List<double[]> predictions) {
+    public double[] aggregatePredictions(List<double[]> predictions) {
         double[] probabilities = new double[SentimentCategory.values().length];
         for (double[] prediction: predictions) {
             for (int i = 0; i < prediction.length; i++)
                probabilities[i] += prediction[i];
         }
 
-        SentimentCategory aggrCategory = null;
-        double maxProbability = -1;
-        for (int i = 0; i < probabilities.length; i++) {
-            if (probabilities[i] > maxProbability) {
-                maxProbability = probabilities[i];
-                aggrCategory = SentimentCategory.idToCategory(i);
-            }
-        }
-        probability = maxProbability / predictions.size();
+        for (int i = 0; i < probabilities.length; i++)
+            probabilities[i] /= predictions.size();
 
-        return aggrCategory;
+        return probabilities;
     }
 
-    @Override
-    public double getProbability() {
-        return probability;
-    }
-
-    private void resetProbability() {
-        probability = -1;
-    }
 }
