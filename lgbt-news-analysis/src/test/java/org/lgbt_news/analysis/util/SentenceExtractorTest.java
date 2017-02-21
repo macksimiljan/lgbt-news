@@ -23,7 +23,7 @@ public class SentenceExtractorTest {
 
         SentenceExtractor extractor = new SentenceExtractor(connection);
         NytDate pubDate = new NytDate.Builder().year(2017).createDate();
-        Set<String> sentences = extractor.getSentenceContexts(queryterm, pubDate);
+        Set<Window> sentences = extractor.getSentenceContexts(queryterm, pubDate);
         assertEquals(60, sentences.size());
 
         db.closeDbConnection();
@@ -33,7 +33,7 @@ public class SentenceExtractorTest {
     public void test_extractContainingSentencesFromText() {
         String text = "Ich gehe nach Hause. Ich mag Hunde von M. Musterman. Hunde sind wirklich toll. Ich mag Sonne.";
         String containedWord = "Hund";
-        List<String> sentences = SentenceExtractor.extractContainingSentencesFromText(text, containedWord);
+        List<Window> sentences = SentenceExtractor.extractContainingSentencesFromText(text, containedWord);
         assertEquals("Ich mag Hunde von M. Musterman.", sentences.get(0));
         assertEquals("Hunde sind wirklich toll.", sentences.get(1));
     }
@@ -42,7 +42,7 @@ public class SentenceExtractorTest {
     public void test_extractContainingWindowsFromText() {
         String text = "Heute ist Sonntag. Ich gehe nach Hause. Ich mag Hunde. Hunde sind wirklich toll. Ich mag Sonne. Der Mond scheint.";
         String containedWord = "Hund";
-        List<String> windows = SentenceExtractor.extractContainingWindowsFromText(text, containedWord, 1);
+        List<Window> windows = SentenceExtractor.extractContainingWindowsFromText(text, containedWord, 1);
         int actualNoSentences = windows.size();
         assertEquals(2, actualNoSentences);
         assertEquals("Ich gehe nach Hause. Ich mag Hunde. Hunde sind wirklich toll.", windows.get(0));

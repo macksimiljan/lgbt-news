@@ -24,6 +24,7 @@ public class ExceptionHandler {
     }
 
     public static void processException(Object o, Exception e, String additionalNote) {
+        System.err.println(additionalNote);
         e.printStackTrace();
         additionalNote = (additionalNote.trim().length() > 0) ? "\t"+additionalNote : "";
         logger.error(o.getClass().getSimpleName()+"\t"+e.getMessage()+additionalNote);

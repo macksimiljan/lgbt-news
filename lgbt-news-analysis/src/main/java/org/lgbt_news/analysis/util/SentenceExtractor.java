@@ -46,15 +46,15 @@ public class SentenceExtractor {
     }
 
 
-    public Set<String> getSentenceContexts(String containedWord, NytDate pubDate) {
+    public Set<Window> getSentenceContexts(String containedWord, NytDate pubDate) {
         return getWindowContexts(containedWord, pubDate,0);
     }
 
-    public Set<String> getWindowContexts(String containedWord, NytDate pubDate, int halfWindowSize) {
+    public Set<Window> getWindowContexts(String containedWord, NytDate pubDate, int halfWindowSize) {
         this.pubDate = pubDate;
         this.containedWord = containedWord;
         this.halfWindowSize = halfWindowSize;
-        Set<String> contexts = new HashSet<>();
+        Set<Window> contexts = new HashSet<>();
         try {
             contexts = queryContexts();
         } catch (Exception e) {
@@ -64,13 +64,26 @@ public class SentenceExtractor {
         return  contexts;
     }
 
-    private Set<String> queryContexts() {
-        Set<String> contexts = new HashSet<>();
+    public Set<Window> getWindowContexts(String containedWord, NytDate beginPubDate, NytDate endPubDate, int halfWindowSize) {
+        int start = Integer.valueOf(beginPubDate.getYear());
+        int end = Integer.valueOf(endPubDate.getYear());
+
+        Set<Window> allWindows = new HashSet<>();
+        for (int year = start; year <= end; year++) {
+            NytDate pubDate = new NytDate.Builder().year(year).createDate();
+            Set<Window> windows = getWindowContexts(containedWord, pubDate, halfWindowSize);
+            allWindows.addAll(windows);
+        }
+        return allWindows;
+    }
+
+    private Set<Window> queryContexts() {
+        Set<Window> contexts = new HashSet<>();
         try {
             Set<Integer> documentIds = queryDocumentIds();
             PreparedStatement stmtTexts = createPreparedStatementForTexts();
             for (int id : documentIds) {
-                List<String> documentWindows = queryWindowsWithContainedWord(stmtTexts, id);
+                List<Window> documentWindows = queryWindowsWithContainedWord(stmtTexts, id);
                 contexts.addAll(documentWindows);
             }
             stmtTexts.close();
@@ -98,18 +111,18 @@ public class SentenceExtractor {
         return documentIds;
     }
 
-    private List<String> queryWindowsWithContainedWord(PreparedStatement stmtTexts, int documentId) throws SQLException {
-        List<String> sentences = new ArrayList<>();
+    private List<Window> queryWindowsWithContainedWord(PreparedStatement stmtTexts, int documentId) throws SQLException {
+        List<Window> windows = new ArrayList<>();
 
         stmtTexts.setInt(1, documentId);
         ResultSet texts = stmtTexts.executeQuery();
         while (texts.next()) {
             String text = texts.getString(1);
-            List<String> windowsPerText = extractContainingWindowsFromText(text, containedWord, halfWindowSize);
-            sentences.addAll(windowsPerText);
+            List<Window> windowsPerText = extractContainingWindowsFromText(text, containedWord, halfWindowSize);
+            windows.addAll(windowsPerText);
         }
 
-        return sentences;
+        return windows;
     }
 
     private PreparedStatement createPreparedStatementForTexts() throws SQLException {
@@ -119,19 +132,19 @@ public class SentenceExtractor {
         return prepStmt;
     }
 
-    public static List<String> extractContainingSentencesFromText(String text, String containedWord) {
+    public static List<Window> extractContainingSentencesFromText(String text, String containedWord) {
         return extractContainingWindowsFromText(text, containedWord, 0);
     }
 
-    public static List<String> extractContainingWindowsFromText(String text, String containedWord, int halfWindowSize) {
-        List<String> extractedWindows = new ArrayList<>();
+    public static List<Window> extractContainingWindowsFromText(String text, String containedWord, int halfWindowSize) {
+        List<Window> extractedWindows = new ArrayList<>();
 
         Document document = new Document(text);
         List<Sentence> sentences = document.sentences();
         for (int i = 0; i < sentences.size(); i++) {
             Sentence currentSentence = sentences.get(i);
             if (currentSentence.text().toLowerCase().contains(containedWord.toLowerCase())) {
-                String window = buildWindow(sentences, i, halfWindowSize);
+                Window window = buildWindow(sentences, i, halfWindowSize);
                 extractedWindows.add(window);
             }
         }
@@ -139,18 +152,18 @@ public class SentenceExtractor {
         return extractedWindows;
     }
 
-    private static String buildWindow(List<Sentence> sentences, int currentSentencePosition, int halfWindowSize) {
-        String window = "";
-
+    private static Window buildWindow(List<Sentence> sentences, int currentSentencePosition, int halfWindowSize) {
         int windowEnd = currentSentencePosition + halfWindowSize;
         windowEnd = (windowEnd >= sentences.size()) ? sentences.size()-1 : windowEnd;
         int windowStart = currentSentencePosition - halfWindowSize;
         windowStart = (windowStart < 0) ? 0 : windowStart;
 
+        String[] windowSentences = new String[windowEnd-windowStart+1];
         for (int i = windowStart; i <= windowEnd; i++)
-            window += sentences.get(i).text()+" ";
+            windowSentences[i-windowStart] = sentences.get(i).text();
+        int indexFocus = currentSentencePosition-windowStart;
 
-        return window.trim();
+        return new Window(windowSentences, indexFocus);
     }
 
     private void handleException(Exception e) {

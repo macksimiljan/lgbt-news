@@ -7,7 +7,7 @@ import static org.junit.Assert.*;
 /**
  * @author max
  */
-public class SentenceEvalTest {
+public class SentimentEvalTest {
     @Test
     public void test_getCategory() throws Exception {
 

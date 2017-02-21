@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * @author max
  */
-public class SentenceEval {
+public class SentimentEval {
 
     private static int counter = 1;
 
@@ -19,7 +19,7 @@ public class SentenceEval {
     private final List<double[]> predictions;
     private double[] aggregatedPredictions;
 
-    public SentenceEval(String window, List<double[]> predictions) {
+    public SentimentEval(String window, List<double[]> predictions) {
         id = counter++;
         this.window = window;
         this.predictions = predictions;
