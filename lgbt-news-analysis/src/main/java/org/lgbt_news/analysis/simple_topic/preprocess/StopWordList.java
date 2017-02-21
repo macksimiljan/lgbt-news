@@ -8,6 +8,8 @@ import java.util.Set;
  */
 public class StopWordList {
 
+    // TODO: see also https://github.com/jconwell/coreNlp
+
     private Set<String> stopWords;
 
     public StopWordList() {
@@ -15,9 +17,11 @@ public class StopWordList {
         loadStopWords();
     }
 
-    public boolean isStopword(String word) {
+    public boolean isStopWord(String word) {
+        boolean isStopWord = (word.length() < 2) ? true : false;
         word = word.toLowerCase().trim();
-        return (stopWords.contains(word)) ? true : false;
+        isStopWord |= stopWords.contains(word);
+        return isStopWord;
     }
 
     public boolean isANumber(String word) {
@@ -42,6 +46,7 @@ public class StopWordList {
         stopWords.add("this");
         stopWords.add("those");
 
+        stopWords.add("all");
         stopWords.add("he");
         stopWords.add("it");
         stopWords.add("its");
@@ -50,6 +55,7 @@ public class StopWordList {
         stopWords.add("her");
         stopWords.add("mine");
         stopWords.add("my");
+        stopWords.add("none");
         stopWords.add("our");
         stopWords.add("she");
         stopWords.add("their");
@@ -76,8 +82,10 @@ public class StopWordList {
         stopWords.add("of");
         stopWords.add("on");
         stopWords.add("over");
+        stopWords.add("through");
         stopWords.add("to");
         stopWords.add("under");
+        stopWords.add("until");
         stopWords.add("while");
         stopWords.add("with");
 
@@ -93,37 +101,51 @@ public class StopWordList {
         stopWords.add("although");
         stopWords.add("as");
         stopWords.add("because");
+        stopWords.add("how");
         stopWords.add("if");
         stopWords.add("since");
         stopWords.add("then");
         stopWords.add("when");
         stopWords.add("where");
         stopWords.add("whether");
+        stopWords.add("while");
 
         stopWords.add("are");
         stopWords.add("be");
         stopWords.add("been");
+        stopWords.add("can");
+        stopWords.add("could");
         stopWords.add("did");
         stopWords.add("do");
         stopWords.add("done");
         stopWords.add("does");
+        stopWords.add("go");
+        stopWords.add("goes");
+        stopWords.add("gone");
+        stopWords.add("went");
         stopWords.add("is");
         stopWords.add("was");
         stopWords.add("were");
         stopWords.add("had");
         stopWords.add("has");
         stopWords.add("have");
+        stopWords.add("say");
+        stopWords.add("says");
+        stopWords.add("said");
         stopWords.add("will");
         stopWords.add("would");
 
         stopWords.add("also");
+        stopWords.add("here");
         stopWords.add("so");
         stopWords.add("than");
+        stopWords.add("there");
 
         stopWords.add("'s");
         stopWords.add("'d");
         stopWords.add("'re");
         stopWords.add("'m");
         stopWords.add("'t");
+        stopWords.add("-lrb-");
     }
 }

@@ -9,23 +9,23 @@ import java.io.*;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author max
  */
 public class WordStatisticCorpus implements WordStatistic {
 
-    private static final String FILE = "./src/main/resources/wordStatistics.tsv";
+    private static final String FILE = "/home/max/git/lgbt-news/lgbt-news-analysis/src/main/resources/wordStatistics.tsv";
     private final String KEY_SUM = "##sum##";
     private final String SQL = "SELECT text FROM leadparagraph";
     private final Connection CONN;
 
     private Map<String, Integer> occurrences;
     private int sum;
+
+    private String[] contextWords = null;
+    private Map<String, Integer> inverseIndexContextWords = null;
 
     public WordStatisticCorpus(Connection connection) {
         CONN = connection;
@@ -68,15 +68,15 @@ public class WordStatisticCorpus implements WordStatistic {
         for (String text : texts) {
             Document document = new Document(text);
             for (Sentence sentence : document.sentences())
-                countOccurencesInSentence(sentence, stopWordList);
+                countOccurrencesInSentence(sentence, stopWordList);
         }
         occurrences.put(KEY_SUM, sum);
     }
 
-    private void countOccurencesInSentence(Sentence sentence, StopWordList stopWordList) throws Exception {
+    private void countOccurrencesInSentence(Sentence sentence, StopWordList stopWordList) throws Exception {
         for (String word : sentence.words()) {
             word = word.toLowerCase();
-            if (word.length() > 1 && !stopWordList.isStopword(word) && !stopWordList.isANumber(word)) {
+            if (!stopWordList.isStopWord(word) && !stopWordList.isANumber(word)) {
                 Integer oldValue = occurrences.get(word);
                 Integer newValue = (oldValue == null) ? 1 : oldValue+1;
                 occurrences.put(word, newValue);
@@ -100,6 +100,8 @@ public class WordStatisticCorpus implements WordStatistic {
             try (BufferedReader r = new BufferedReader(new FileReader(file))) {
                 String line;
                 while ((line = r.readLine()) != null) {
+                    if (line.length() < 1)
+                        continue;
                     String[] data = line.split("\t");
                     String word = data[0].trim();
                     int count = Integer.valueOf(data[1].trim());
@@ -113,11 +115,15 @@ public class WordStatisticCorpus implements WordStatistic {
         }
     }
 
+    public int getFrequency(String word) {
+        return occurrences.get(word.toLowerCase());
+    }
+
     @Override
     public double getProbability(String word) {
         double probability = 0;
         try {
-            int count = occurrences.get(word);
+            int count = occurrences.get(word.toLowerCase());
             probability = 1.0*count / occurrences.get(KEY_SUM);
         } catch (Exception e) {
             ExceptionHandler.processException(this, e, "Word '"+word+"' not found or missing sum key '"+KEY_SUM+"'!");
@@ -126,8 +132,30 @@ public class WordStatisticCorpus implements WordStatistic {
     }
 
     @Override
-    public int getNumberOfTokens() {
-        return occurrences.size();
+    public int getNoOfWordTypes() {
+        return occurrences.size()-1;
+    }
+
+    @Override
+    public String[] getContextWords(int thresholdContextWord) {
+        if (contextWords == null) {
+            inverseIndexContextWords = new HashMap<>();
+            List<String> contextWordsList = new ArrayList<>();
+            for (String word : occurrences.keySet()) {
+                if (occurrences.get(word) >= thresholdContextWord) {
+                    contextWordsList.add(word);
+                    inverseIndexContextWords.put(word, contextWordsList.size()-1);
+                }
+            }
+            contextWords = contextWordsList.toArray(new String[contextWordsList.size()]);
+        }
+        return contextWords;
+    }
+
+    public Map<String, Integer> getInverseIndexContextWords(int thresholdContextWord) {
+        if (inverseIndexContextWords == null)
+            getContextWords(thresholdContextWord);
+        return inverseIndexContextWords;
     }
 
     public static String getFile() {

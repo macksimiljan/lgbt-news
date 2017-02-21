@@ -16,10 +16,8 @@ public class WordStatisticCorpusTest {
         DatabaseAccess db = new DatabaseAccess();
         Connection connection = db.getDbConnection();
         WordStatisticCorpus wordStatistic = new WordStatisticCorpus(connection);
-        assertEquals(66328, wordStatistic.getNumberOfTokens());
+        assertEquals(66311, wordStatistic.getNoOfWordTypes());
         db.closeDbConnection();
-
-
     }
 
     @Test
