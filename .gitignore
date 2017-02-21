@@ -21,3 +21,4 @@ lgbt-news-collect/src/main/resources/history/
 
 lgbt-news-analysis/src/main/resources/*.log
 lgbt-news-analysis/src/main/resources/sentimentAnalysis_*
+lgbt-news-analysis/src/main/resources/topic*
