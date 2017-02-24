@@ -10,7 +10,6 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -23,16 +22,14 @@ public class SentimentAPI {
 
     private static final Logger logger = Logger.getLogger("infoLogger");
 
-    private String queryterm;
-    private int halfWindowSize;
+    private String queryTerm;
     private Aggregation aggregation;
 
     private Set<SentimentEval> evaluations;
     private double[] overallPredictions;
 
-   public SentimentAPI(String queryterm, int halfWindowSize, Aggregation aggregation) {
-        this.queryterm = queryterm;
-        this.halfWindowSize = halfWindowSize;
+   public SentimentAPI(String queryTerm, Aggregation aggregation) {
+        this.queryTerm = queryTerm;
         this.aggregation = aggregation;
         evaluations = new HashSet<>();
         overallPredictions = null;
@@ -79,9 +76,9 @@ public class SentimentAPI {
     }
 
 
-    public void printSentimentAnalysis() {
+    public void printSentimentAnalysis(int halfWindowSize) {
         String agg = aggregation.getClass().getSimpleName();
-        final String path = "./lgbt-news-analysis/src/main/resources/sentimentAnalysis_"+queryterm+"_"+halfWindowSize+"_"+agg+".csv";
+        final String path = "./lgbt-news-analysis/src/main/resources/sentimentAnalysis_"+ queryTerm +"_"+halfWindowSize+"_"+agg+".csv";
         System.out.println("\nWriting to "+path+" ... ");
 
         try (PrintWriter w = new PrintWriter(new BufferedWriter(new FileWriter(path)))) {

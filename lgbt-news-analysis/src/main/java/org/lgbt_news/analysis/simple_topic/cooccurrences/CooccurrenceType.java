@@ -22,7 +22,6 @@ public class CooccurrenceType extends Cooccurrence {
     }
 
     public double aggregateDistances() {
-        double aggregatedDistance = -1;
         int sum = 0;
         for (int d : distances)
             sum += d;
@@ -44,6 +43,10 @@ public class CooccurrenceType extends Cooccurrence {
     @Override
     public String toString() {
         return getTarget()+" -- "+ getCoWord()+"\t#:"+ frequency;
+    }
+
+    public String toSimpleString() {
+        return getTarget()+"\t"+getCoWord()+frequency;
     }
 
     @Override

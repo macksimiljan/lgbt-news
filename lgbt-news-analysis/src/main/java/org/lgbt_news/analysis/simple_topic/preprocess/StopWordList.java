@@ -18,7 +18,7 @@ public class StopWordList {
     }
 
     public boolean isStopWord(String word) {
-        boolean isStopWord = (word.length() < 2) ? true : false;
+        boolean isStopWord = (word.length() < 2);
         word = word.toLowerCase().trim();
         isStopWord |= stopWords.contains(word);
         return isStopWord;

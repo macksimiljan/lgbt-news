@@ -1,6 +1,5 @@
 package org.lgbt_news.analysis.simple_topic.cooccurrences;
 
-import edu.stanford.nlp.simple.Document;
 import org.lgbt_news.analysis.simple_topic.preprocess.WordStatistic;
 import org.lgbt_news.analysis.simple_topic.preprocess.WordStatisticCorpus;
 
@@ -15,17 +14,17 @@ public class ContextVector {
     private String[] contextWords;
     private Map<String, Integer> inverseIndexContextWords;
     private final Set<List<String>> corpus;
-    private final int halfWindowSize;
+    private final int maxDistanceCooccurrence;
 
     private Map<String, int[]> contextVectors;
 
     private String currentTargetWord;
     private int[] currentContextVector;
 
-    public ContextVector(int thresholdContextWord, Set<List<String>> corpus, int halfWindowSize) {
+    public ContextVector(int thresholdContextWord, Set<List<String>> corpus, int maxDistanceCooccurrence) {
         this.thresholdContextWord = thresholdContextWord;
         this.corpus = corpus;
-        this.halfWindowSize = halfWindowSize;
+        this.maxDistanceCooccurrence = maxDistanceCooccurrence;
         this.contextVectors = new HashMap<>();
         loadContextWords();
     }
@@ -64,10 +63,10 @@ public class ContextVector {
     }
 
     private List<String> buildWindow(List<String> document, int i) {
-        List<String> window = new ArrayList<>(2*halfWindowSize + 1);
-        int indexNext = i - halfWindowSize;
+        List<String> window = new ArrayList<>(2* maxDistanceCooccurrence + 1);
+        int indexNext = i - maxDistanceCooccurrence;
         indexNext = (indexNext < 0) ? 0 : indexNext;
-        while (indexNext <= i + halfWindowSize) {
+        while (indexNext <= i + maxDistanceCooccurrence) {
             if (indexNext < document.size())
                 window.add(document.get(indexNext));
             indexNext++;

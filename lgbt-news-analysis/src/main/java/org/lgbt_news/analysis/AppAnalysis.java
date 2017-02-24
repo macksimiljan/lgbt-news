@@ -19,27 +19,21 @@ import java.util.Set;
  */
 public class AppAnalysis {
 
-    private static final String QUERYTERM = "transgender";
-    private static final int HALF_WINDOW_SIZE = 0;
+    private static final String[] QUERY_TERMS = {"transgender","transsexual","homosexual","lesbian","gay community","gay","bisexual","queer"};
+    private static final int HALF_WINDOW_SIZE = 1;
     private static final Aggregation AGGR_SENTIMENT = new AggregationAverage();
-    private static final float ALPHA = 1.2f;
+    private static  int MAX_DISTANCE_COOCCURRENCE = 14;
     private static Connection CONN;
+
 
     public static void main(String[] args) {
         DatabaseAccess db = new DatabaseAccess();
         CONN = db.getDbConnection();
 
         try {
-            NytDate beginPubYear = new NytDate.Builder().year(2010).createDate();
-            NytDate endPubYear = new NytDate.Builder().year(2017).createDate();
-            Set<Window> contexts = extractContexts(beginPubYear, endPubYear);
-            db.closeDbConnection();
-
-//            SentimentAPI sentimentAPI = new SentimentAPI(QUERYTERM, HALF_WINDOW_SIZE, AGGR_SENTIMENT);
-//            runSentimentAPI(sentimentAPI, contexts);
-
-            TopicAPI topicAPI = new TopicAPI(QUERYTERM, 6);
-            runTopicAPI(topicAPI, contexts);
+            for (int beginYear = 1850; beginYear < 2020; beginYear += 10)
+                for (String queryTerm : QUERY_TERMS)
+                    processQueryTermInInterval(queryTerm, beginYear, beginYear+9);
         } catch (Exception e) {
             ExceptionHandler.processException(new AppAnalysis(), e);
         } finally {
@@ -47,25 +41,27 @@ public class AppAnalysis {
         }
     }
 
-    private static Set<Window> extractContexts(NytDate pubYear) {
-        Set<Window> contexts = new HashSet<>();
-        try {
-            System.out.print("Extracting contexts from database for " + QUERYTERM + " in " + pubYear.getYear() + " ... ");
-            SentenceExtractor extractor = new SentenceExtractor(CONN);
-            contexts = extractor.getWindowContexts(QUERYTERM, pubYear, HALF_WINDOW_SIZE);
-            System.out.println(" (" + contexts.size() + " contexts)");
-        } catch (Exception e) {
-            ExceptionHandler.processException(new AppAnalysis(), e, "Error while extracting contexts for year "+pubYear.getYear()+".");
-        }
-        return contexts;
+    private static void processQueryTermInInterval(String queryTerm, int beginYear, int endYear) {
+        System.out.println();
+        NytDate beginPubYear = new NytDate.Builder().year(beginYear).createDate();
+        NytDate endPubYear = new NytDate.Builder().year(endYear).createDate();
+        Set<Window> contexts = extractContexts(queryTerm, beginPubYear, endPubYear);
+
+//      SentimentAPI sentimentAPI = new SentimentAPI(queryTerm, AGGR_SENTIMENT);
+//      runSentimentAPI(sentimentAPI, contexts);
+
+        TopicAPI topicAPI = new TopicAPI(queryTerm, MAX_DISTANCE_COOCCURRENCE);
+        topicAPI.setPath("./lgbt-news-analysis/src/main/resources/topics/" +
+                "topics_"+queryTerm+beginYear+"to"+endYear+"_"+MAX_DISTANCE_COOCCURRENCE+".csv");
+        runTopicAPI(topicAPI, contexts);
     }
 
-    public static Set<Window> extractContexts(NytDate beginPubYear, NytDate endPubDate) {
+    private static Set<Window> extractContexts(String queryTerm, NytDate beginPubYear, NytDate endPubDate) {
         Set<Window> contexts = new HashSet<>();
         try {
-            System.out.print("Extracting contexts from database for " + QUERYTERM + " from " + beginPubYear.getYear() + " to " + endPubDate.getYear());
+            System.out.print("Extracting contexts from database for " + queryTerm + " from " + beginPubYear.getYear() + " to " + endPubDate.getYear());
             SentenceExtractor extractor = new SentenceExtractor(CONN);
-            contexts = extractor.getWindowContexts(QUERYTERM, beginPubYear, endPubDate, HALF_WINDOW_SIZE);
+            contexts = extractor.getWindowContexts(queryTerm, beginPubYear, endPubDate, HALF_WINDOW_SIZE);
             System.out.println(" (" + contexts.size() + " contexts)");
         } catch (Exception e) {
             ExceptionHandler.processException(new AppAnalysis(), e, "Error while extracting contexts from year "+beginPubYear.getYear()+" to "+endPubDate.getYear()+".");
@@ -79,7 +75,7 @@ public class AppAnalysis {
             long timeStart = System.currentTimeMillis();
             sentimentAPI.start(contexts);
             System.out.println(" >> "+(System.currentTimeMillis()-timeStart)/1000+"s");
-            sentimentAPI.printSentimentAnalysis();
+            sentimentAPI.printSentimentAnalysis(HALF_WINDOW_SIZE);
         } catch (Exception e) {
             ExceptionHandler.processException(new AppAnalysis(), e, "Error while running sentiment API.");
         }
@@ -91,7 +87,7 @@ public class AppAnalysis {
             long timeStart = System.currentTimeMillis();
             topicAPI.start(contexts);
             System.out.println(" >> "+(System.currentTimeMillis()-timeStart)/1000+"s");
-            topicAPI.printTopicAnalysis();
+            topicAPI.printTopicAnalysis(true, true);
         } catch (Exception e) {
             ExceptionHandler.processException(new AppAnalysis(), e, "Error while running topic API.");
         }

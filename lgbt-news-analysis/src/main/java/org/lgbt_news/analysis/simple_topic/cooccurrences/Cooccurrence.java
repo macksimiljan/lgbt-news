@@ -10,7 +10,6 @@ public class Cooccurrence {
     private final int ID;
     private String target;
     private String coWord;
-    private int distanceInWords;
 
     public Cooccurrence(String target, String coWord) {
         ID = count++;
@@ -26,17 +25,13 @@ public class Cooccurrence {
         return coWord;
     }
 
-    public int getDistanceInWords() {
-        return distanceInWords;
-    }
-
-    public void setDistanceInWords(int distanceInWords) {
-        this.distanceInWords = distanceInWords;
-    }
-
     @Override
     public String toString() {
-        return target +" -- "+ coWord +" (distance: "+distanceInWords+")";
+        return target +" -- "+ coWord;
+    }
+
+    public String toSimpleString() {
+        return target+"\t"+coWord;
     }
 
     @Override

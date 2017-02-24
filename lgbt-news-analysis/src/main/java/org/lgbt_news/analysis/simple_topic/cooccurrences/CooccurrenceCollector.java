@@ -16,6 +16,8 @@ import java.util.*;
  */
 public class CooccurrenceCollector {
 
+    //TODO: I think we can delete this class!
+
     private final String TARGET;
     private final SentenceExtractor EXTRACTOR;
     private int indexTarget;
@@ -68,7 +70,7 @@ public class CooccurrenceCollector {
         int currentDistance = indexTarget;
         for (String word : words) {
             Cooccurrence cooccurrence = new Cooccurrence(words.get(indexTarget), word);
-            cooccurrence.setDistanceInWords(Math.abs(currentDistance));
+//            cooccurrence.setDistanceInWords(Math.abs(currentDistance));
             currentDistance--;
             if (!word.equals(TARGET))
                 cooccurrences.add(cooccurrence);
@@ -79,10 +81,10 @@ public class CooccurrenceCollector {
 
     private void handleCooccurrence(Cooccurrence c) {
         String coWord = c.getCoWord();
-        if (previousTypes.keySet().contains(coWord))
-            addAlreadyKnownType(coWord, c.getDistanceInWords());
-        else
-            addNewType(coWord, c.getDistanceInWords());
+//        if (previousTypes.keySet().contains(coWord))
+//            addAlreadyKnownType(coWord, c.getDistanceInWords());
+//        else
+//            addNewType(coWord, c.getDistanceInWords());
     }
 
     private void addAlreadyKnownType(String coWord, int distance) {

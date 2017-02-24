@@ -65,8 +65,8 @@ public class SentenceExtractor {
     }
 
     public Set<Window> getWindowContexts(String containedWord, NytDate beginPubDate, NytDate endPubDate, int halfWindowSize) {
-        int start = Integer.valueOf(beginPubDate.getYear());
-        int end = Integer.valueOf(endPubDate.getYear());
+        int start = beginPubDate.getYear();
+        int end = endPubDate.getYear();
 
         Set<Window> allWindows = new HashSet<>();
         for (int year = start; year <= end; year++) {

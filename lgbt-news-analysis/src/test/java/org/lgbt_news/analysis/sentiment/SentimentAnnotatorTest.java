@@ -20,9 +20,7 @@ public class SentimentAnnotatorTest {
 //        String text = "The movie was great and enjoyable. I love that film. Yesterday I saw an ugly and smelly cat." +
 //                "Being a transsexual means facing stares every day.";
 
-        String text = "After many years of divisiveness, the Boy Scouts of America have opened their ranks to gay and transgender boys. " +
-                "A transgender woman celebrates the decision to include transgender boys in the Scouts. " +
-                "On Sunday, the minister preaches at the church.";
+        String text = "On sunday, the gay minister preaches at the church.";
 
         annotator.execute(text);
         List<SentimentCategory> categories = annotator.getSentenceCategories();
