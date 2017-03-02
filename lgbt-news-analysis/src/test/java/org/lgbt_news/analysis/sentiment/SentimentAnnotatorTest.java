@@ -17,10 +17,9 @@ public class SentimentAnnotatorTest {
     public void text_execute() throws Exception {
         SentimentAnnotator annotator = new SentimentAnnotator();
 
-//        String text = "The movie was great and enjoyable. I love that film. Yesterday I saw an ugly and smelly cat." +
-//                "Being a transsexual means facing stares every day.";
+        String text = "The movie was great and enjoyable. I love that film. Yesterday I saw an ugly and smelly cat." +
+                "Being a transsexual means facing stares every day.";
 
-        String text = "On sunday, the gay minister preaches at the church.";
 
         annotator.execute(text);
         List<SentimentCategory> categories = annotator.getSentenceCategories();
@@ -33,21 +32,12 @@ public class SentimentAnnotatorTest {
         for (int i = 0; i < categories.size(); i++) {
             SentimentCategory c = categories.get(i);
             double[] p = predictions.get(i);
-            System.out.println(sentences.get(i)+"\n\tprobabilities: "+arrayToString(p)+"\tcategory: "+c);
-//            double probability = predictions.get(i)[c.categoryToId()];
-//            assertEquals(expectedCategories[i], c);
-//            assertEquals(expectedProbabilities[i], probability, 0.01);
-//            System.out.println();
+            double probability = predictions.get(i)[c.categoryToId()];
+            assertEquals(expectedCategories[i], c);
+            assertEquals(expectedProbabilities[i], probability, 0.01);
+            System.out.println();
         }
 
-    }
-
-    String arrayToString(double[] p) {
-        String s = "[";
-        for (double x : p)
-            s += (Math.round(x*1000)/1000.0)+", ";
-        s = s.substring(0, s.length()-2)+"]";
-        return s;
     }
 
 }

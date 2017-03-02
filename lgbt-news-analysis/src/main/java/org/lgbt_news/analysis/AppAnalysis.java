@@ -47,8 +47,8 @@ public class AppAnalysis {
         NytDate endPubYear = new NytDate.Builder().year(endYear).createDate();
         Set<Window> contexts = extractContexts(queryTerm, beginPubYear, endPubYear);
 
-//      SentimentAPI sentimentAPI = new SentimentAPI(queryTerm, AGGR_SENTIMENT);
-//      runSentimentAPI(sentimentAPI, contexts);
+        SentimentAPI sentimentAPI = new SentimentAPI(queryTerm, AGGR_SENTIMENT);
+        runSentimentAPI(sentimentAPI, contexts);
 
         TopicAPI topicAPI = new TopicAPI(queryTerm, MAX_DISTANCE_COOCCURRENCE);
         topicAPI.setPath("./lgbt-news-analysis/src/main/resources/topics/" +

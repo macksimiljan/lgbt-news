@@ -39,11 +39,12 @@ public class App {
         newspaper = "New York Times";
         apiKey = PropertyPoint.getNytKeys().get(0);
         queryterm = QueryTerm.GAY_COMMUNITY.toString();
+        queryterm = "football";
         infoLogger.info("newspaper:" + newspaper + ",queryterm:" + queryterm);
         int interval = 2;
 
         ResponseImport.initializeIdDocument(conn);
-        for (int startYear = 1972; startYear < 2018; startYear += interval) {
+        for (int startYear = 2010; startYear < 2018; startYear += interval) {
             isFirstRequest = true;
 
             int endYear = startYear + (interval - 1);
